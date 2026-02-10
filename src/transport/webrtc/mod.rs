@@ -416,19 +416,19 @@ impl WebRtcTransport {
         );
 
         // create new `Rtc` object for the peer and give it the received STUN message
+        let local_addr = self.socket.local_addr()?;
         let (mut rtc, noise_channel_id) =
-            self.make_rtc_client(ufrag, pass, source, self.socket.local_addr().unwrap());
+            self.make_rtc_client(ufrag, pass, source, local_addr);
 
         rtc.handle_input(Input::Receive(
             Instant::now(),
             Receive {
                 source,
                 proto: Str0mProtocol::Udp,
-                destination: self.socket.local_addr().unwrap(),
+                destination: local_addr,
                 contents,
             },
-        ))
-        .expect("client to handle input successfully");
+        ))?;
 
         let connection_id = self.context.next_connection_id();
         let connection = OpeningWebRtcConnection::new(
