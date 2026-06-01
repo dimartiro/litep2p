@@ -497,7 +497,7 @@ impl TransportBuilder for WebRtcTransport {
 
             const MULTIHASH_SHA256_CODE: u64 = 0x12;
             let certificate = Multihash::wrap(MULTIHASH_SHA256_CODE, &fingerprint)
-                .expect("fingerprint's len to be 32 bytes");
+                .map_err(|_| Error::InvalidData)?;
 
             vec![Multiaddr::empty()
                 .with(Protocol::from(listen_address.ip()))
